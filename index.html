@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단한 계산기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: white;
+        }
+
+        .calculator {
+            width: 300px;
+            background-color: black;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .display-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            background: black;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-screen,
+        .result-screen {
+            color: white;
+            font-size: 24px;
+            min-height: 30px;
+            overflow: hidden;
+        }
+
+        .result-screen {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        button.zero {
+            width: 135px;
+            border-radius: 30px;
+            grid-column: span 2;
+        }
+
+        .gray {
+            background-color: #a5a5a5;
+            color: black;
+        }
+
+        .dark {
+            background-color: #333;
+            color: white;
+        }
+
+        .orange {
+            background-color: #ff9f0a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display-container">
+            <div class="input-screen">0</div>
+            <div class="result-screen">0</div>
+        </div>
+        <div class="buttons">
+            <button class="gray" onclick="clearAll()">AC</button>
+            <button class="gray" onclick="toggleSign()">+/-</button>
+            <button class="gray" onclick="addOperator('%')">%</button>
+            <button class="orange" onclick="addOperator('/')">÷</button>
+
+            <button class="dark" onclick="addNumber(7)">7</button>
+            <button class="dark" onclick="addNumber(8)">8</button>
+            <button class="dark" onclick="addNumber(9)">9</button>
+            <button class="orange" onclick="addOperator('*')">×</button>
+
+            <button class="dark" onclick="addNumber(4)">4</button>
+            <button class="dark" onclick="addNumber(5)">5</button>
+            <button class="dark" onclick="addNumber(6)">6</button>
+            <button class="orange" onclick="addOperator('-')">−</button>
+
+            <button class="dark" onclick="addNumber(1)">1</button>
+            <button class="dark" onclick="addNumber(2)">2</button>
+            <button class="dark" onclick="addNumber(3)">3</button>
+            <button class="orange" onclick="addOperator('+')">+</button>
+
+            <button class="dark zero" onclick="addNumber(0)">0</button>
+            <button class="dark" onclick="addNumber('.')">.</button>
+            <button class="orange" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let inputScreen = document.querySelector(".input-screen");
+        let resultScreen = document.querySelector(".result-screen");
+        let expression = "";
+
+        function updateDisplay() {
+            inputScreen.textContent = expression || "0";
+        }
+
+        function addNumber(num) {
+            expression += String(num);
+            updateDisplay();
+        }
+
+        function addOperator(operator) {
+            if (expression === "") return;
+            expression += ` ${operator} `;
+            updateDisplay();
+        }
+
+        function calculateResult() {
+            try {
+                let sanitizedExpression = expression.replace(/,/g, '');
+                let result = new Function(`return ${sanitizedExpression}`)();
+                resultScreen.textContent = result;
+            } catch {
+                resultScreen.textContent = "Error";
+            }
+        }
+
+        function clearAll() {
+            expression = "";
+            resultScreen.textContent = "0";
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            let tokens = expression.trim().split(" ");
+            if (tokens.length === 0) return;
+
+            let lastToken = tokens[tokens.length - 1];
+            if (!isNaN(lastToken)) {
+                tokens[tokens.length - 1] = String(-parseFloat(lastToken));
+                expression = tokens.join(" ");
+                updateDisplay();
+            }
+        }
+    </script>
+</body>
+</html>
